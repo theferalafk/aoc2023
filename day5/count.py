@@ -56,38 +56,28 @@ def parse_data(data):
         res.append(split_numbers(i.split('\n')[1:-2]))
     return res + [last]
 
-def range_to_mapping(mapping):
-    res = {}
-    for i in mapping:
-        for j in range(i[2]):
-            res[j+i[1]]=j+i[0]
-    return res
-
 def perform_mapping(num, mapping):
     res = num
     for i in mapping:
-        if i[1]<=num<=i[1]+i[2]:
-            offset = i[0]-i[1]
+        if i[0]<=num<=i[0]+i[2]-1:
+            offset = i[1] - i[0]
             res = num+offset
             break
     return res
 
 parsed_data = parse_data(data)
-
-array_mapping = []
-for i in parsed_data[1:]:
-    a=1#array_mapping.append(range_to_mapping(i))
-
-res = []
-print(parsed_data[0])
-for i in range(0,len(parsed_data[0]),2):
-    print(parsed_data[0][i])
-    rangethings = [parsed_data[0][i]+j for j in range(parsed_data[0][i],parsed_data[0][i]+parsed_data[0][i+1])]
-    #print(len(rangethings))
-    print("starting...")
-    for k in rangethings:
-        tmp = k
-        for mapping in parsed_data[1:]:
-            tmp = perform_mapping(tmp, mapping)
-        res.append(tmp)
-print(min(res))
+mappings = parsed_data[1:]
+mappings.reverse()
+searching = True
+num = 0
+while searching:
+    starting_value = num
+    for maps in mappings:
+        starting_value = perform_mapping(starting_value, maps)
+    for i in range(0,len(parsed_data[0]),2):
+        if parsed_data[0][i]<=starting_value<=parsed_data[0][i]+parsed_data[0][i+1]:
+            print(starting_value)
+            searching = False
+    if num % 100000==0:
+        print(num, starting_value)
+    num += 1
